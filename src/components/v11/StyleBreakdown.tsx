@@ -183,9 +183,7 @@ function DesktopView({ outfit, stylist, allItems, focusItem, savedItems, toggleS
                                             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/20 mb-1 block group-hover:text-white/40 transition-colors">{item.brand}</span>
                                             <h4 className="text-lg font-display font-bold uppercase leading-tight">{item.name}</h4>
                                         </div>
-                                        <div className="text-right">
-                                            <span className="text-2xl font-bold text-white/90">${item.price}</span>
-                                        </div>
+                                        <span className="text-2xl font-bold text-white/90">Rs {item.price}</span>
                                     </div>
 
                                     <div className="flex gap-4">
@@ -269,7 +267,7 @@ function MobileView({ outfit, stylist, allItems, focusItem, savedItems, toggleSa
                                 <div className="flex-1">
                                     <span className="text-[9px] font-bold uppercase tracking-widest text-white/20 mb-1 block">{item.brand}</span>
                                     <h4 className="text-lg font-display font-bold uppercase leading-tight mb-2 font-display">{item.name}</h4>
-                                    <span className="text-xl font-bold text-white/80">${item.price}</span>
+                                    <span className="text-xl font-bold text-white/80">Rs. {item.price}</span>
                                 </div>
                             </div>
                             <div className="flex gap-3">

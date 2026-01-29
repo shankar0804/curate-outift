@@ -81,7 +81,7 @@ function DesktopView({ item, outfits, navigate }: ViewProps) {
                                 <p className="text-[9px] font-medium text-white/20 uppercase tracking-[0.6em] mb-4">{item.brand}</p>
                                 <h2 className="text-2xl font-display font-bold uppercase leading-tight mb-4">{item.name}</h2>
                                 <div className="flex items-center gap-3">
-                                    <span className="text-lg font-bold text-white/20">${item.price}</span>
+                                    <span className="text-lg font-bold text-white/20">Rs. {item.price}</span>
                                 </div>
                             </div>
 
@@ -178,7 +178,7 @@ function MobileView({ item, outfits, navigate }: ViewProps) {
                     <div className="flex-1">
                         <p className="text-[9px] font-medium text-white/20 uppercase tracking-[0.4em] mb-2">{item.brand}</p>
                         <h2 className="text-2xl font-display font-extrabold uppercase leading-tight mb-2">{item.name}</h2>
-                        <span className="text-lg font-bold text-white/20">${item.price}</span>
+                        <span className="text-lg font-bold text-white/20">Rs {item.price}</span>
                     </div>
                     <a
                         href={item.purchaseUrl}

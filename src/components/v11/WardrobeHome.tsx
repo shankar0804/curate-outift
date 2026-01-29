@@ -181,7 +181,7 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                                 <div className="px-1">
                                     <div className="flex items-center justify-between mb-2">
                                         <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-white/10 group-hover:text-white/30 transition-colors font-display">{item.brand}</p>
-                                        <p className="text-sm font-bold text-white/40 group-hover:text-white/90 transition-colors font-display">${item.price}</p>
+                                        <p className="text-sm font-bold text-white/40 group-hover:text-white/90 transition-colors font-display">Rs. {item.price}</p>
                                     </div>
                                     <h3 className="text-base font-display font-bold uppercase leading-tight group-hover:text-white transition-colors">{item.name}</h3>
                                 </div>
@@ -310,7 +310,7 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                                 <div className="px-1">
                                     <div className="flex items-center justify-between mb-0.5">
                                         <p className="text-[7.5px] font-bold uppercase tracking-[0.1em] text-white/20 font-display">{item.brand}</p>
-                                        <p className="text-[10px] font-bold text-white/60 font-display">${item.price}</p>
+                                        <p className="text-[10px] font-bold text-white/60 font-display">Rs. {item.price}</p>
                                     </div>
                                     <h3 className="text-xs font-bold tracking-tight truncate uppercase font-display">{item.name}</h3>
                                 </div>
