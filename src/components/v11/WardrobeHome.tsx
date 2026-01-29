@@ -61,8 +61,8 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
     return (
         <>
             {/* Minimalist Top Bar */}
-            <header className="px-12 pt-16 pb-8 border-b border-white/5">
-                <div className="flex items-center justify-between mb-12">
+            <header className="px-12 pt-16 pb-6 border-b border-white/5">
+                <div className="flex items-center justify-between">
                     <h1 className="font-display text-4xl font-extrabold leading-normal uppercase">
                         The Curator<span className="text-white/20">.</span>
                     </h1>
@@ -83,32 +83,13 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                         <User className="w-5 h-5 text-white/60" />
                     </button>
                 </div>
-
-                <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={cn(
-                                "flex items-center gap-2 px-6 py-3 rounded-2xl whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.2em] transition-all border font-display",
-                                selectedCategory === cat.id
-                                    ? "bg-white text-black border-white shadow-xl"
-                                    : "bg-white/5 text-white/30 border-white/5 hover:bg-white/10"
-                            )}
-                        >
-                            <span className="opacity-50 group-hover:opacity-100 font-black">{cat.icon}</span>
-                            <span className="font-display">{cat.label}</span>
-                        </button>
-                    ))}
-                </div>
             </header>
 
             {/* Stage 1: Featured Stories Carousel */}
-            <section className="py-16 border-b border-white/5">
-                <div className="px-12 flex items-end justify-between mb-8">
+            <section className="py-12 border-b border-white/5">
+                <div className="px-12 flex items-end justify-between mb-6">
                     <div>
-                        <span className="text-[10px] font-medium uppercase tracking-[0.4em] text-white/20 mb-3 block font-display">Perspective № 01</span>
-                        <h2 className="text-6xl font-display font-extrabold leading-none">Cover Stories.</h2>
+                        <h2 className="text-4xl font-display font-extrabold leading-none">Curated Edits.</h2>
                     </div>
                 </div>
 
@@ -147,14 +128,36 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                 </div>
             </section>
 
-            {/* Stage 2: Uniform Wardrobe Gallery */}
-            <section className="px-12 py-16">
-                <div className="flex items-center gap-6 mb-12">
-                    <h2 className="text-3xl font-display font-extrabold leading-none">Wardrobe.</h2>
+            <section className="px-12 pt-16 pb-8">
+                <div className="flex items-center gap-6">
+                    <h2 className="text-4xl font-display font-extrabold leading-none tracking-tight">Pick a piece. Build around it.</h2>
                     <div className="h-px flex-1 bg-white/5" />
                     <span className="text-[10px] font-medium text-white/20 uppercase tracking-[0.2em] font-display">{filteredItems.length} ARCHIVED</span>
                 </div>
+            </section>
 
+            {/* Category Filter - Relocated */}
+            <section className="px-12 py-8 bg-black/20 sticky top-0 z-40 border-b border-white/5 backdrop-blur-md">
+                <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2 max-w-7xl mx-auto">
+                    {categories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => setSelectedCategory(cat.id)}
+                            className={cn(
+                                "flex items-center gap-2 px-8 py-4 rounded-full whitespace-nowrap text-[11px] font-bold uppercase tracking-[0.2em] transition-all border font-display",
+                                selectedCategory === cat.id
+                                    ? "bg-white text-black border-white shadow-2xl scale-105"
+                                    : "bg-white/5 text-white/40 border-white/5 hover:bg-white/10 hover:text-white"
+                            )}
+                        >
+                            <span className="opacity-50 group-hover:opacity-100 font-black">{cat.icon}</span>
+                            <span className="font-display">{cat.label}</span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            <section className="px-12 py-16">
                 <div className="grid grid-cols-4 gap-x-8 gap-y-16">
                     <AnimatePresence mode="popLayout">
                         {filteredItems.map((item) => (
@@ -197,7 +200,7 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
 function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navigate }: ViewProps) {
     return (
         <>
-            <header className="px-6 pt-12 pb-6 border-b border-white/5">
+            <header className="px-6 pt-12 pb-4 border-b border-white/5">
                 <div className="flex items-center justify-between mb-10">
                     <h1 className="font-display text-base font-extrabold tracking-widest leading-none uppercase">
                         The Curator<span className="text-white/20">.</span>
@@ -207,7 +210,7 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                     </button>
                 </div>
 
-                <div className="relative group mb-6">
+                <div className="relative group">
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-white/20 group-focus-within:text-white transition-colors" />
                     <input
                         type="text"
@@ -215,30 +218,12 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                         className="w-full bg-white/[0.02] border border-white/5 rounded-2xl py-4 pl-12 pr-6 text-sm font-bold outline-none focus:border-white/20 focus:bg-white/[0.04] transition-all placeholder:text-white/10 font-display"
                     />
                 </div>
-
-                <div className="flex gap-3 overflow-x-auto scrollbar-hide -mx-6 px-6">
-                    {categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => setSelectedCategory(cat.id)}
-                            className={cn(
-                                "flex items-center gap-2 px-5 py-2.5 rounded-xl whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.15em] transition-all border font-display",
-                                selectedCategory === cat.id
-                                    ? "bg-white text-black border-white shadow-xl"
-                                    : "bg-white/5 text-white/30 border-white/5 hover:bg-white/10"
-                            )}
-                        >
-                            {cat.label}
-                        </button>
-                    ))}
-                </div>
             </header>
 
-            <section className="py-8 border-b border-white/5">
-                <div className="px-6 flex items-end justify-between mb-5">
+            <section className="py-6 border-b border-white/5">
+                <div className="px-6 flex items-end justify-between mb-4">
                     <div>
-                        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-white/20 font-display">Volume 01</span>
-                        <h2 className="text-2xl font-display font-extrabold tracking-tight mt-0.5">Cover Stories.</h2>
+                        <h2 className="text-xl font-display font-extrabold tracking-tight mt-0.5">Curated Edits.</h2>
                     </div>
                 </div>
 
@@ -277,13 +262,29 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                 </div>
             </section>
 
-            <section className="px-6 py-8">
-                <div className="flex items-center gap-4 mb-8">
-                    <h2 className="text-2xl font-display font-extrabold tracking-tight">Wardrobe.</h2>
-                    <div className="h-0.5 flex-1 bg-white/5" />
-                    <span className="text-[9px] font-bold text-white/15 uppercase tracking-widest font-display">{filteredItems.length} ARCHIVED</span>
-                </div>
+            <section className="px-6 pt-10 pb-2">
+                <h2 className="text-lg font-display font-extrabold tracking-tighter leading-tight whitespace-nowrap">Pick a piece. Build around it.</h2>
+            </section>
 
+            {/* Category Filter - Relocated Mobile */}
+            <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex gap-3 overflow-x-auto scrollbar-hide">
+                {categories.map((cat) => (
+                    <button
+                        key={cat.id}
+                        onClick={() => setSelectedCategory(cat.id)}
+                        className={cn(
+                            "flex items-center gap-2 px-6 py-3 rounded-full whitespace-nowrap text-[10px] font-bold uppercase tracking-[0.15em] transition-all border font-display",
+                            selectedCategory === cat.id
+                                ? "bg-white text-black border-white shadow-xl"
+                                : "bg-white/5 text-white/30 border-white/5 hover:bg-white/10"
+                        )}
+                    >
+                        {cat.label}
+                    </button>
+                ))}
+            </div>
+
+            <section className="px-6 py-8">
                 <div className="grid grid-cols-2 gap-x-4 gap-y-10">
                     <AnimatePresence mode="popLayout">
                         {filteredItems.map((item) => (
