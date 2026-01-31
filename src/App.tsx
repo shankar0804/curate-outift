@@ -35,6 +35,9 @@ import { WardrobeHome as V11Home } from '@/components/v11/WardrobeHome';
 import { CurationSelection as V11Selection } from '@/components/v11/CurationSelection';
 import { StyleBreakdown as V11Breakdown } from '@/components/v11/StyleBreakdown';
 
+// Admin Component
+import { AdminPortal } from '@/components/admin/AdminPortal';
+
 export default function App() {
     const [searchParams] = useSearchParams();
     const version = searchParams.get('v') || '11'; // Default to V11 (Desktop)
@@ -87,6 +90,7 @@ export default function App() {
                 <Route path="/" element={getComponent('home')} />
                 <Route path="/item/:itemId" element={getComponent('selection')} />
                 <Route path="/look/:outfitId" element={getComponent('breakdown')} />
+                <Route path="/admin" element={<AdminPortal />} />
             </Routes>
         </div>
     );

@@ -172,6 +172,16 @@ export const fashionItems: Record<string, FashionItem> = {
         image: 'https://images.unsplash.com/photo-1598915850252-fb07ad1e6768?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxibGF6ZXIlMjBzdWl0JTIwamFja2V0fGVufDF8fHx8MTc2OTU0MTI2OHww&ixlib=rb-4.1.0&q=80&w=400',
         purchaseUrl: 'https://hugoboss.com',
         platform: 'Hugo Boss'
+    },
+    'item-13': {
+        id: 'item-13',
+        name: 'Mauve Linen Relaxed Shirt',
+        brand: 'Zara India',
+        price: 2990,
+        category: 'shirt',
+        image: '/assets/mauve-shirt.png',
+        purchaseUrl: 'https://www.zara.com/in/',
+        platform: 'Zara India'
     }
 };
 
@@ -252,6 +262,7 @@ export function getOutfitsByItem(itemId: string): CuratedOutfit[] {
 export function getFeaturedItems(): FashionItem[] {
     return [
         fashionItems['item-1'],
+        fashionItems['item-13'],
         fashionItems['item-2'],
         fashionItems['item-4'],
         fashionItems['item-10'],

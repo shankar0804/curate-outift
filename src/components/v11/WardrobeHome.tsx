@@ -1,12 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { fashionItems, ItemCategory, curatedOutfits, stylists } from '@/data/curatedData';
+import { api, FashionItem, CuratedOutfit } from '@/services/api';
 import { Search, User, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 
-const categories: { id: ItemCategory | 'all'; label: string; icon: string }[] = [
+const categories = [
     { id: 'all', label: 'All Pieces', icon: '✨' },
     { id: 'shirt', label: 'Shirts', icon: '👔' },
     { id: 'pants', label: 'Pants', icon: '👖' },
@@ -17,13 +17,45 @@ const categories: { id: ItemCategory | 'all'; label: string; icon: string }[] = 
 
 export function WardrobeHome() {
     const navigate = useNavigate();
-    const [selectedCategory, setSelectedCategory] = useState<ItemCategory | 'all'>('all');
+    const [selectedCategory, setSelectedCategory] = useState<string>('all');
+    const [items, setItems] = useState<FashionItem[]>([]);
+    const [outfits, setOutfits] = useState<CuratedOutfit[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [itemsData, outfitsData] = await Promise.all([
+                    api.getItems(),
+                    api.getOutfits()
+                ]);
+                setItems(itemsData);
+                setOutfits(outfitsData);
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
 
     const filteredItems = selectedCategory === 'all'
-        ? Object.values(fashionItems)
-        : Object.values(fashionItems).filter(item => item.category === selectedCategory);
+        ? items
+        : items.filter(item => item.category === selectedCategory);
 
     const isDesktop = useMediaQuery('(min-width: 768px)');
+
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center">
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    <p className="text-sm font-display font-medium text-white/40 tracking-widest uppercase">Curating Collection</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background text-foreground">
@@ -31,6 +63,7 @@ export function WardrobeHome() {
                 <div className="pb-24">
                     <DesktopView
                         filteredItems={filteredItems}
+                        outfits={outfits}
                         selectedCategory={selectedCategory}
                         setSelectedCategory={setSelectedCategory}
                         navigate={navigate}
@@ -40,6 +73,7 @@ export function WardrobeHome() {
                 <div className="pb-24">
                     <MobileView
                         filteredItems={filteredItems}
+                        outfits={outfits}
                         selectedCategory={selectedCategory}
                         setSelectedCategory={setSelectedCategory}
                         navigate={navigate}
@@ -51,13 +85,14 @@ export function WardrobeHome() {
 }
 
 interface ViewProps {
-    filteredItems: any[];
+    filteredItems: FashionItem[];
+    outfits: CuratedOutfit[];
     selectedCategory: string;
     setSelectedCategory: (cat: any) => void;
     navigate: any;
 }
 
-function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, navigate }: ViewProps) {
+function DesktopView({ filteredItems, outfits, selectedCategory, setSelectedCategory, navigate }: ViewProps) {
     return (
         <>
             {/* Minimalist Top Bar */}
@@ -94,37 +129,34 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                 </div>
 
                 <div className="flex gap-8 overflow-x-auto scrollbar-hide px-12 snap-x pb-4">
-                    {curatedOutfits.map((outfit) => {
-                        const stylist = stylists.find(s => s.id === outfit.stylistId);
-                        return (
-                            <motion.div
-                                key={outfit.id}
-                                onClick={() => navigate(`/look/${outfit.id}`)}
-                                whileTap={{ scale: 0.98 }}
-                                className="relative flex-none w-[28vw] h-[65vh] rounded-[48px] overflow-hidden snap-center group cursor-pointer border border-white/5 shadow-2xl"
-                            >
-                                <img src={outfit.modelImage} className="absolute inset-x-0 bottom-0 w-full h-[110%] object-cover object-top transition-all duration-1000 group-hover:scale-105" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent" />
+                    {outfits.map((outfit) => (
+                        <motion.div
+                            key={outfit.id}
+                            onClick={() => navigate(`/look/${outfit.id}`)}
+                            whileTap={{ scale: 0.98 }}
+                            className="relative flex-none w-[28vw] h-[65vh] rounded-[48px] overflow-hidden snap-center group cursor-pointer border border-white/5 shadow-2xl"
+                        >
+                            <img src={outfit.model_image_url} className="absolute inset-x-0 bottom-0 w-full h-[110%] object-cover object-top transition-all duration-1000 group-hover:scale-105" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/10 to-transparent" />
 
-                                <div className="absolute inset-x-0 bottom-0 p-10">
-                                    <div className="flex items-end justify-between gap-6">
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-display font-extrabold text-white leading-tight mb-3 uppercase">{outfit.name}</h3>
-                                            <div className="flex gap-3">
-                                                {outfit.vibe.slice(0, 3).map(v => (
-                                                    <span key={v} className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] border border-white/10 px-3 py-1 rounded-full font-display">{v}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-3 pb-2 border-b border-white/10 h-fit">
-                                            <img src={stylist?.avatar} className="w-6 h-6 rounded-full grayscale object-cover ring-1 ring-white/20" />
-                                            <span className="text-[8px] font-bold uppercase tracking-widest text-white/40 leading-none font-display">{stylist?.name}</span>
+                            <div className="absolute inset-x-0 bottom-0 p-10">
+                                <div className="flex items-end justify-between gap-6">
+                                    <div className="flex-1">
+                                        <h3 className="text-xl font-display font-extrabold text-white leading-tight mb-3 uppercase">{outfit.name}</h3>
+                                        <div className="flex gap-3">
+                                            {outfit.vibe?.slice(0, 3).map(v => (
+                                                <span key={v} className="text-[9px] font-bold text-white/30 uppercase tracking-[0.2em] border border-white/10 px-3 py-1 rounded-full font-display">{v}</span>
+                                            ))}
                                         </div>
                                     </div>
+                                    <div className="flex items-center gap-3 pb-2 border-b border-white/10 h-fit">
+                                        <img src={outfit.stylist?.avatar_url} className="w-6 h-6 rounded-full grayscale object-cover ring-1 ring-white/20" />
+                                        <span className="text-[8px] font-bold uppercase tracking-widest text-white/40 leading-none font-display">{outfit.stylist?.name}</span>
+                                    </div>
                                 </div>
-                            </motion.div>
-                        );
-                    })}
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
@@ -136,7 +168,7 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                 </div>
             </section>
 
-            {/* Category Filter - Relocated */}
+            {/* Category Filter */}
             <section className="px-12 py-8 bg-black/20 sticky top-0 z-40 border-b border-white/5 backdrop-blur-md">
                 <div className="flex gap-4 overflow-x-auto scrollbar-hide py-2 max-w-7xl mx-auto">
                     {categories.map((cat) => (
@@ -174,7 +206,7 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
                                 <div className="relative rounded-[32px] overflow-hidden bg-white/[0.03] border border-white/5 mb-6 shadow-2xl aspect-[3/4]">
                                     <motion.img
                                         layoutId={`item-image-${item.id}`}
-                                        src={item.image}
+                                        src={item.image_url}
                                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
                                     />
                                     <div className="absolute top-4 right-4 w-12 h-12 rounded-2xl glass-panel flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-500 border border-white/20 shadow-xl translate-x-4 group-hover:translate-x-0">
@@ -197,7 +229,7 @@ function DesktopView({ filteredItems, selectedCategory, setSelectedCategory, nav
     );
 }
 
-function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navigate }: ViewProps) {
+function MobileView({ filteredItems, outfits, selectedCategory, setSelectedCategory, navigate }: ViewProps) {
     return (
         <>
             <header className="px-6 pt-12 pb-4 border-b border-white/5">
@@ -228,37 +260,34 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                 </div>
 
                 <div className="flex gap-4 overflow-x-auto scrollbar-hide px-6 snap-x">
-                    {curatedOutfits.map((outfit) => {
-                        const stylist = stylists.find(s => s.id === outfit.stylistId);
-                        return (
-                            <motion.div
-                                key={outfit.id}
-                                onClick={() => navigate(`/look/${outfit.id}`)}
-                                whileTap={{ scale: 0.96 }}
-                                className="relative flex-none w-[82vw] h-[45vh] rounded-[32px] overflow-hidden snap-center group cursor-pointer border border-white/5 shadow-2xl"
-                            >
-                                <img src={outfit.modelImage} className="absolute inset-x-0 bottom-0 w-full h-[110%] object-cover object-top" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                    {outfits.map((outfit) => (
+                        <motion.div
+                            key={outfit.id}
+                            onClick={() => navigate(`/look/${outfit.id}`)}
+                            whileTap={{ scale: 0.96 }}
+                            className="relative flex-none w-[82vw] h-[45vh] rounded-[32px] overflow-hidden snap-center group cursor-pointer border border-white/5 shadow-2xl"
+                        >
+                            <img src={outfit.model_image_url} className="absolute inset-x-0 bottom-0 w-full h-[110%] object-cover object-top" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                                <div className="absolute inset-x-0 bottom-0 p-6">
-                                    <div className="flex items-end justify-between gap-4">
-                                        <div className="flex-1">
-                                            <h3 className="text-2xl font-display font-extrabold text-white leading-tight mb-2 uppercase">{outfit.name}</h3>
-                                            <div className="flex gap-2">
-                                                {outfit.vibe.slice(0, 2).map(v => (
-                                                    <span key={v} className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] font-display">{v}</span>
-                                                ))}
-                                            </div>
-                                        </div>
-                                        <div className="flex items-center gap-2 pb-1 border-b border-white/10 h-fit">
-                                            <img src={stylist?.avatar} className="w-4 h-4 rounded-full grayscale object-cover" />
-                                            <span className="text-[7px] font-bold uppercase tracking-widest text-white/40 font-display">{stylist?.name}</span>
+                            <div className="absolute inset-x-0 bottom-0 p-6">
+                                <div className="flex items-end justify-between gap-4">
+                                    <div className="flex-1">
+                                        <h3 className="text-2xl font-display font-extrabold text-white leading-tight mb-2 uppercase">{outfit.name}</h3>
+                                        <div className="flex gap-2">
+                                            {outfit.vibe?.slice(0, 2).map(v => (
+                                                <span key={v} className="text-[8px] font-bold text-white/30 uppercase tracking-[0.2em] font-display">{v}</span>
+                                            ))}
                                         </div>
                                     </div>
+                                    <div className="flex items-center gap-2 pb-1 border-b border-white/10 h-fit">
+                                        <img src={outfit.stylist?.avatar_url} className="w-4 h-4 rounded-full grayscale object-cover" />
+                                        <span className="text-[7px] font-bold uppercase tracking-widest text-white/40 font-display">{outfit.stylist?.name}</span>
+                                    </div>
                                 </div>
-                            </motion.div>
-                        );
-                    })}
+                            </div>
+                        </motion.div>
+                    ))}
                 </div>
             </section>
 
@@ -266,7 +295,6 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                 <h2 className="text-lg font-display font-extrabold tracking-tighter leading-tight whitespace-nowrap">Pick a piece. Build around it.</h2>
             </section>
 
-            {/* Category Filter - Relocated Mobile */}
             <div className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-white/5 px-6 py-4 flex gap-3 overflow-x-auto scrollbar-hide">
                 {categories.map((cat) => (
                     <button
@@ -301,7 +329,7 @@ function MobileView({ filteredItems, selectedCategory, setSelectedCategory, navi
                                 <div className="relative rounded-[24px] overflow-hidden bg-white/[0.03] border border-white/5 mb-3 shadow-xl aspect-[4/5]">
                                     <motion.img
                                         layoutId={`item-image-${item.id}`}
-                                        src={item.image}
+                                        src={item.image_url}
                                         className="absolute inset-0 w-full h-full object-cover"
                                     />
                                     <div className="absolute top-3 right-3 w-8 h-8 rounded-full glass-panel flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/20 shadow-xl">
